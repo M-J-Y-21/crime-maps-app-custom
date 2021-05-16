@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Map1st</string>
+    <string name="title_activity_maps">See Crime Around You</string>
+    <string name="add_details">Add Crime Details</string>
+    <string name="submit_details">Submit Crime Details</string>
+    <string-array name="crime_array">
+        <item>Select Type Of Crime</item>
+        <item>Murder</item>
+        <item>Robbery</item>
+        <item>Hijacking</item>
+        <item>Trespassing</item>
+        <item>Literring</item>
+    </string-array>
+</resources>
