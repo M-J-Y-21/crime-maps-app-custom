@@ -33,7 +33,6 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.*
 
-
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemSelectedListener {
 
 
@@ -44,6 +43,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val LOCATION_PERMISSION_REQUEST = 1
     var selectedPosition = 0
+
+    private val serialVersionUID = -913279302752396461L
+
+
 
     //    private var getLocation = GetLocation("", LatLng(0.0, 0.0))
     //private lateinit var listMarkerInfo: MutableList<GetLocation> //
@@ -367,5 +370,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
 
 }
 
-class GetLocation(var title: String, var coordinates: LatLng, var colour: Float) : Serializable {}
+//data class GetLocation(var title: String, var coordinates: LatLng, var colour: Float) : Serializable {}
 
