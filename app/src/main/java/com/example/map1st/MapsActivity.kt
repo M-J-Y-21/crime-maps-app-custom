@@ -44,11 +44,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
     private val LOCATION_PERMISSION_REQUEST = 1
     var selectedPosition = 0
 
-    private val serialVersionUID = -913279302752396461L
+//    private val serialVersionUID = -913279302752396461L
 
 
+    private var getLocation = GetLocation("", LatLng(0.0, 0.0))
 
-    //    private var getLocation = GetLocation("", LatLng(0.0, 0.0))
     //private lateinit var listMarkerInfo: MutableList<GetLocation> //
     var listMarkerInfo = mutableListOf<GetLocation>()
 
@@ -91,9 +91,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps) // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this) // get referance to my ad crime button
-        // In kotlin not good practice to use underscores in variable names
-        // it does need in java but not kotlin val addCrime = findViewById(R.id.add_crime) as Button In kotlin can immediately call by Id like below
+        mapFragment.getMapAsync(this)
+
+
 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -144,25 +144,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
             }
         }
 
-        val userMarkersFromFile = deserializeUserMarkers(this)
-        listMarkerInfo.addAll(userMarkersFromFile)
-
-        if (listMarkerInfo != null) {
-            for (marker in listMarkerInfo) {
-                var markerColor = marker.colour
-                mMap.addMarker(MarkerOptions().position(marker.coordinates).title(marker.title).draggable(
-                    false).icon(BitmapDescriptorFactory.defaultMarker(markerColor)))
-            }
-        }
-
-        val model = ViewModelProviders.of(this)[MainActivityViewModel::class.java]
-        model.getMarkers().observe(this, Observer { markersSnapshot ->
-            Log.i(TAG, "Received markers from view model")
-            listMarkerInfo.clear()
-            listMarkerInfo.addAll(markersSnapshot)
-
-        })
-
 
     }
 
@@ -201,7 +182,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
 
 
     fun onAddCrime(view: View, lastLocation: Location) {
-        val closeToJozi = LatLng(55.0, 1.0)
         val mCurrentPlace = LatLng(lastLocation.latitude, lastLocation.longitude)
 
 
@@ -222,24 +202,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
                     mMap.addMarker(MarkerOptions().position(mCurrentPlace).title("Drag Murder Marker to Crime Destination!").draggable(
                         true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurrentPlace, 15f))
-                val markerobj = GetLocation("Murder Crime Destination",
-                    marker.position,
-                    BitmapDescriptorFactory.HUE_RED)
                 Toast.makeText(this,
                     "Drag Murder Marker to Crime Destination!",
                     Toast.LENGTH_LONG).show()
+
                 confirmCrime.setOnClickListener {
                     marker.setDraggable(false)
-                    marker.title = "Murder Crime Destination"
-                    markerobj.title = marker.title
-                    markerobj.coordinates = marker.position
-                    listMarkerInfo.add(markerobj)
-                    serializeUserMarkers(this, listMarkerInfo)
-
-                    //                    serializeUserMarkers(this, listMarkerInfo)
+                    marker.setTitle("Murder Crime Destination")
+                    getLocation.title = marker.title
+                    getLocation.coordinates = marker.position
+                    listMarkerInfo.add(getLocation)
+                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
                     val intent = Intent(this, NewDatePicker1::class.java)
                     startActivity(intent)
-
                 }
             }
             2 -> {
@@ -249,16 +224,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurrentPlace, 15f))
                 Toast.makeText(this,
                     "Drag Robbery Marker to Crime Destination!",
-                    Toast.LENGTH_LONG).show() //                confirmCrime.setOnClickListener {
-                //                    marker.setDraggable(false)
-                //                    marker.setTitle("Robbery Crime Destination")
-                //                    getLocation.title = marker.title
-                //                    getLocation.coordinates = marker.position
-                //                    listMarkerInfo.add(getLocation)
-                //                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
-                //                    val intent = Intent(this, NewDatePicker1::class.java)
-                //                    startActivity(intent)
-                //                }
+                    Toast.LENGTH_LONG).show()
+                confirmCrime.setOnClickListener {
+                    marker.setDraggable(false)
+                    marker.setTitle("Robbery Crime Destination")
+                    getLocation.title = marker.title
+                    getLocation.coordinates = marker.position
+                    listMarkerInfo.add(getLocation)
+                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
+                    val intent = Intent(this, NewDatePicker1::class.java)
+                    startActivity(intent)
+                }
             }
             3 -> {
                 val marker =
@@ -267,16 +243,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurrentPlace, 15f))
                 Toast.makeText(this,
                     "Drag Hijacking Marker to Crime Destination!",
-                    Toast.LENGTH_LONG).show() //                confirmCrime.setOnClickListener {
-                //                    marker.setDraggable(false)
-                //                    marker.setTitle("Hijacking Crime Destination")
-                ////                    getLocation.title = marker.title
-                ////                    getLocation.coordinates = marker.position
-                ////                    listMarkerInfo.add(getLocation)
-                ////                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
-                ////                    val intent = Intent(this, NewDatePicker1::class.java)
-                ////                    startActivity(intent)
-                ////                }
+                    Toast.LENGTH_LONG).show()
+                confirmCrime.setOnClickListener {
+                    marker.setDraggable(false)
+                    marker.setTitle("Hijacking Crime Destination")
+                    getLocation.title = marker.title
+                    getLocation.coordinates = marker.position
+                    listMarkerInfo.add(getLocation)
+                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
+                    val intent = Intent(this, NewDatePicker1::class.java)
+                    startActivity(intent)
+                }
             }
             4 -> {
                 val marker =
@@ -285,16 +262,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurrentPlace, 15f))
                 Toast.makeText(this,
                     "Drag Trespassing Marker to Crime Destination!",
-                    Toast.LENGTH_LONG).show() //                confirmCrime.setOnClickListener {
-                //                    marker.setDraggable(false)
-                //                    marker.setTitle("Trespassing Crime Destination")
-                //                    getLocation.title = marker.title
-                //                    getLocation.coordinates = marker.position
-                //                    listMarkerInfo.add(getLocation)
-                //                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
-                //                    val intent = Intent(this, NewDatePicker1::class.java)
-                //                    startActivity(intent)
-                //                }
+                    Toast.LENGTH_LONG).show()
+                confirmCrime.setOnClickListener {
+                    marker.setDraggable(false)
+                    marker.setTitle("Trespassing Crime Destination")
+                    getLocation.title = marker.title
+                    getLocation.coordinates = marker.position
+                    listMarkerInfo.add(getLocation)
+                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
+                    val intent = Intent(this, NewDatePicker1::class.java)
+                    startActivity(intent)
+                }
             }
             5 -> {
                 val marker =
@@ -303,49 +281,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurrentPlace, 15f))
                 Toast.makeText(this,
                     "Drag Literring Marker to Crime Destination!",
-                    Toast.LENGTH_LONG).show() //                confirmCrime.setOnClickListener {
-                //                    marker.setDraggable(false)
-                //                    marker.setTitle("Literring Crime Destination")
-                //                    getLocation.title = marker.title
-                //                    getLocation.coordinates = marker.position
-                //                    listMarkerInfo.add(getLocation)
-                //                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
-                //                    val intent = Intent(this, NewDatePicker1::class.java)
-                //                    startActivity(intent)
-                //                }
+                    Toast.LENGTH_LONG).show()
+                confirmCrime.setOnClickListener {
+                    marker.setDraggable(false)
+                    marker.setTitle("Literring Crime Destination")
+                    getLocation.title = marker.title
+                    getLocation.coordinates = marker.position
+                    listMarkerInfo.add(getLocation)
+                    Log.e("DebugTag", "New content: " + listMarkerInfo.toString())
+                    val intent = Intent(this, NewDatePicker1::class.java)
+                    startActivity(intent)
+                }
 
             }
         }
 
 
     }
-
-
-    private fun serializeUserMarkers(context: Context, userMarkers: List<GetLocation>) {
-        Log.i(TAG, "SerializeUserMapWithMarkers")
-        ObjectOutputStream(FileOutputStream(getDataFile(context))).use {
-            it.writeObject(userMarkers)
-
-        }
-    }
-
-    private fun deserializeUserMarkers(context: Context): List<GetLocation> {
-        Log.i(TAG, "DeSerializeMapWithMarkers")
-        val dataFile = getDataFile(context)
-        if (!dataFile.exists()) {
-            Log.i(TAG, "Data File Does not exist yet")
-            return emptyList()
-        }
-
-        ObjectInputStream(FileInputStream(dataFile)).use { return it.readObject() as List<GetLocation> }
-
-    }
-
-    private fun getDataFile(context: Context): File {
-        Log.i(TAG, "Getting file from directory ${context.filesDir}")
-        return File(context.filesDir, FILENAME)
-    }
-
 
     override fun onItemSelected(parent: AdapterView<*>?,
                                 view: View?,
@@ -370,5 +322,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItem
 
 }
 
-//data class GetLocation(var title: String, var coordinates: LatLng, var colour: Float) : Serializable {}
+
 
